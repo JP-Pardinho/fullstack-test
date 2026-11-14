@@ -3,7 +3,7 @@ namespace InvestmentApp.Api.Models
     public class Investimento
     {
         public Guid Id { get; set; }
-        public Guid UserId { get; set; }
+        public Guid UsuarioId { get; set; }
         public Usuario Usuario { get; set; } = null!;
         public decimal ValorInicial { get; set; }
         public DateTime DataCriacao { get; set; }
@@ -12,10 +12,10 @@ namespace InvestmentApp.Api.Models
 
         public Investimento() {}
 
-        public Investimento(Guid userId, decimal valorInicial, DateTime dataCriacao)
+        public Investimento(Guid usuarioId, decimal valorInicial, DateTime dataCriacao)
         {
             Id = Guid.NewGuid();
-            UserId = userId;
+            UsuarioId = usuarioId;
             ValorInicial = valorInicial;
             DataCriacao = dataCriacao;
         }
