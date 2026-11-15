@@ -51,17 +51,26 @@ public class InvestimentosController : ControllerBase
         return Ok(investimento);
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<ActionResult<InvestimentoService>> SacarInvestimento(
-        Guid id, 
+    [HttpPost("{id:guid}/sacar")]
+    public async Task<ActionResult<InvestimentoResponse>> SacarInvestimento(
+        Guid id,
         [FromBody] SacarInvestimentoRequest request)
     {
-        try {
+        try
+        {
             var investimento = await _investimentoService.SacarAsync(id, request);
             return Ok(investimento);
-        } catch (ArgumentException ex) {
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
             return BadRequest(new { message = ex.Message });
-        } catch (InvalidOperationException ex) {
+        }
+        catch (InvalidOperationException ex)
+        {
             return Conflict(new { message = ex.Message });
         }
     }

@@ -13,7 +13,7 @@ public class InvestimentoService
     {
         _context = context;
     }
-
+    
     public async Task<InvestimentoResponse> CriarAsync(CreateInvestimentoRequest request)
     {
         if (request.DataCriacao.Date > DateTime.Today)
@@ -29,7 +29,7 @@ public class InvestimentoService
         _context.Investimentos.Add(investimento);
         await _context.SaveChangesAsync();
 
-        return MapearParaResponse(investimento, usuario);
+        return Response(investimento, usuario);
     }
 
     public async Task<PagedResponse<InvestimentoResponse>> ListarAsync(Guid? usuarioId, int page = 1, int pageSize = 10)
@@ -56,7 +56,7 @@ public class InvestimentoService
             .ToListAsync();
 
         var items = investimentos
-            .Select(i => MapearParaResponse(i, i.Usuario))
+            .Select(i => Response(i, i.Usuario))
             .ToList();
 
         return new PagedResponse<InvestimentoResponse>(items, page, pageSize, totalItems, totalPages);
@@ -72,7 +72,7 @@ public class InvestimentoService
         if (investimento is null)
             return null;
 
-        return MapearParaResponse(investimento, investimento.Usuario);
+        return Response(investimento, investimento.Usuario);
     }
 
     public static decimal CalcularSaldoBruto(decimal valorInicial, DateTime dataCriacao, DateTime dataReferencia)
@@ -88,7 +88,7 @@ public class InvestimentoService
         return Math.Round(valorInicial * fator, 2, MidpointRounding.AwayFromZero);
     }
 
-    private static InvestimentoResponse MapearParaResponse(Investimento investimento, Usuario usuario)
+    private static InvestimentoResponse Response(Investimento investimento, Usuario usuario)
     {
         var dataReferencia = investimento.DataSaque ?? DateTime.Today;
         var saldoBruto = CalcularSaldoBruto(investimento.ValorInicial, investimento.DataCriacao, dataReferencia);
@@ -139,8 +139,8 @@ public class InvestimentoService
         if (investimento.DataSaque.HasValue)
             throw new InvalidOperationException("O investimento já foi sacado.");
 
-        if (request.DataSaque.Date < investimento.DataCriacao.Date)
-            throw new ArgumentException("A data de saque inválida.");
+        if (request.DataSaque.Date < investimento.DataCriacao.Date || request.DataSaque.Date > DateTime.Today)
+            throw new ArgumentException("A data de saque não pode ser anterior à criação nem futura.");
 
         var saldoBruto = CalcularSaldoBruto(investimento.ValorInicial, investimento.DataCriacao, request.DataSaque);
         var rendimento = saldoBruto - investimento.ValorInicial;
@@ -151,7 +151,7 @@ public class InvestimentoService
 
         await _context.SaveChangesAsync();
 
-        return MapearParaResponse(investimento, investimento.Usuario);
+        return Response(investimento, investimento.Usuario);
     }
 
 }
