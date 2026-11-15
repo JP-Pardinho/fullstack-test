@@ -1,0 +1,153 @@
+<section class="space-y-6">
+  <div class="rounded-xl border border-slate-200 bg-white px-6 py-4 shadow-sm">
+    <p class="text-xs font-medium uppercase tracking-wider text-slate-500">
+      Saldo Total dos Investimentos
+    </p>
+    <p class="mt-1 text-2xl font-bold text-emerald-700">
+      {{ saldoTotal() | currency:'BRL':'symbol':'1.2-2' }}
+    </p>
+  </div>
+
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900">Investimentos</h1>
+    </div>
+
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <select
+        aria-label="Filtrar por usuário"
+        [value]="usuarioSelecionado()"
+        (change)="filtrarPorUsuario($any($event.target).value)"
+        class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+      >
+        <option value="">Todos os usuários</option>
+        @for (usuario of usuarios(); track usuario.id) {
+          <option [value]="usuario.id">{{ usuario.nome }}</option>
+        }
+      </select>
+
+      <a
+        routerLink="/investimentos/novo"
+        class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700"
+      >
+        Novo Investimento
+      </a>
+    </div>
+  </div>
+
+  @if (erro()) {
+    <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      {{ erro() }}
+    </div>
+  }
+
+  @if (carregando()) {
+    <div class="rounded-xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500 shadow-sm">
+      Carregando investimentos...
+    </div>
+  } @else {
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+          <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500">
+            <tr>
+              <th class="px-6 py-3">Titular</th>
+              <th class="px-6 py-3">Data de Criação</th>
+              <th class="px-6 py-3">Valor Inicial</th>
+              <th class="px-6 py-3">Saldo Atual</th>
+              <th class="px-6 py-3">Status</th>
+              <th class="px-6 py-3 text-right">Ações</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-slate-200 bg-white">
+            @for (item of investimentos(); track item.id) {
+              <tr class="transition hover:bg-slate-50">
+                <td class="whitespace-nowrap px-6 py-4 font-medium text-slate-900">
+                  {{ item.usuario.nome }}
+                </td>
+                <td class="whitespace-nowrap px-6 py-4 text-slate-600">
+                  {{ item.dataCriacao | date:'dd/MM/yyyy' }}
+                </td>
+                <td class="whitespace-nowrap px-6 py-4 text-slate-700">
+                  {{ item.valorInicial | currency:'BRL':'symbol':'1.2-2' }}
+                </td>
+                <td class="whitespace-nowrap px-6 py-4 font-semibold text-slate-700">
+                  {{ item.saldoAtual | currency:'BRL':'symbol':'1.2-2' }}
+                </td>
+                <td class="whitespace-nowrap px-6 py-4">
+                  @if (item.dataSaque) {
+                    <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-700">
+                      Sacado
+                    </span>
+                  } @else {
+                    <span class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
+                      Ativo
+                    </span>
+                  }
+                </td>
+                <td class="whitespace-nowrap px-6 py-4 text-right">
+                  <a
+                    [routerLink]="['/investimentos', item.id]"
+                    class="inline-flex items-center text-blue-600 transition hover:text-blue-800"
+                  >
+                    <lucide-icon name="eye" class="h-5 w-5" />
+
+                  </a>
+                  @if (item.dataSaque) {
+                    <span
+                      title="Investimento já sacado."
+                      class="ml-3 inline-flex cursor-not-allowed items-center text-gray-400"
+                    >
+                      <lucide-icon name="banknote-arrow-down" class="h-5 w-5" />
+                    </span>
+                  } @else {
+                    <a
+                      [routerLink]="['/investimentos', item.id, 'sacar']"
+                      title="Sacar investimento"
+                      class="ml-3 inline-flex items-center text-red-600 transition hover:text-red-800"
+                    >
+                      <lucide-icon name="banknote-arrow-down" class="h-5 w-5" />
+                    </a>
+                  }
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="px-6 py-10 text-center text-slate-500">
+                  Nenhum investimento encontrado.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flex flex-col items-center justify-between gap-3 border-t border-slate-200 bg-slate-50 px-6 py-3 text-sm text-slate-600 sm:flex-row">
+        <span>
+          Página <strong>{{ page() }}</strong> de <strong>{{ totalPages() }}</strong>
+          ({{ totalItems() }} registros)
+        </span>
+
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            [disabled]="page() <= 1"
+            (click)="mudarPagina(page() - 1)"
+            class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Anterior
+          </button>
+          <button
+            type="button"
+            [disabled]="page() >= totalPages()"
+            (click)="mudarPagina(page() + 1)"
+            class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Próxima
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</section>
