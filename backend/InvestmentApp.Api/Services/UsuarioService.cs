@@ -16,7 +16,15 @@ public class UsuarioService
 
     public async Task<UsuarioResponse> CriarAsync(CreateUsuarioRequest request)
     {
-        var usuario = new Usuario(request.Nome.Trim());
+        var nomeNormalizado = request.Nome.Trim();
+
+        var nomeJaExiste = await _context.Usuarios
+            .AnyAsync(u => u.Nome.ToLower() == nomeNormalizado.ToLower());
+
+        if (nomeJaExiste)
+            throw new InvalidOperationException("Já existe um usuário cadastrado com este nome.");
+
+        var usuario = new Usuario(nomeNormalizado);
 
         _context.Usuarios.Add(usuario);
         await _context.SaveChangesAsync();
@@ -40,5 +48,18 @@ public class UsuarioService
             .Where(u => u.Id == id)
             .Select(u => new UsuarioResponse(u.Id, u.Nome))
             .FirstOrDefaultAsync();
+    }
+
+    public async Task ExcluirAsync(Guid id)
+    {
+        var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Id == id)
+            ?? throw new KeyNotFoundException("Usuário não encontrado.");
+
+        var possuiInvestimentos = await _context.Investimentos.AnyAsync(i => i.UsuarioId == id);
+        if (possuiInvestimentos)
+            throw new InvalidOperationException("Não é possível excluir um usuário que possui investimentos cadastrados (ativos ou sacados).");
+
+        _context.Usuarios.Remove(usuario);
+        await _context.SaveChangesAsync();
     }
 }

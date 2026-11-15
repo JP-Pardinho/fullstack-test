@@ -18,8 +18,15 @@ public class UsuariosController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<UsuarioResponse>> Criar(CreateUsuarioRequest request)
     {
-        var usuario = await _usuarioService.CriarAsync(request);
-        return CreatedAtAction(nameof(GetById), new { id = usuario.Id }, usuario);
+        try
+        {
+            var usuario = await _usuarioService.CriarAsync(request);
+            return CreatedAtAction(nameof(GetById), new { id = usuario.Id }, usuario);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
     }
 
     [HttpGet]
@@ -38,5 +45,23 @@ public class UsuariosController : ControllerBase
             return NotFound();
 
         return Ok(usuario);
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Excluir(Guid id)
+    {
+        try
+        {
+            await _usuarioService.ExcluirAsync(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
     }
 }
