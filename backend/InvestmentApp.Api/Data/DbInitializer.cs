@@ -27,15 +27,15 @@ namespace InvestmentApp.Api.Data
             var investimentos = new List<Investimento>
             {
                 new Investimento(usuarios[0].Id, 10500m, DateTime.Today.AddMonths(-6)),
-                new Investimento(usuarios[1].Id, 20500m, DateTime.Today.AddMonths(-18)),
-                new Investimento(usuarios[2].Id, 30500m, DateTime.Today.AddMonths(-30)),
+                new Investimento(usuarios[1].Id, 20500m, DateTime.Today.AddMonths(-6)),
+                new Investimento(usuarios[2].Id, 30500m, DateTime.Today.AddMonths(-6)),
                 
-                new Investimento(usuarios[0].Id, 1500m, DateTime.Today.AddMonths(-6)),
+                new Investimento(usuarios[0].Id, 1500m, DateTime.Today.AddMonths(-18)),
                 new Investimento(usuarios[1].Id, 2500m, DateTime.Today.AddMonths(-18)),
-                new Investimento(usuarios[2].Id, 3500m, DateTime.Today.AddMonths(-30)),
+                new Investimento(usuarios[2].Id, 3500m, DateTime.Today.AddMonths(-18)),
 
-                new Investimento(usuarios[0].Id, 100m, DateTime.Today.AddMonths(-6)),
-                new Investimento(usuarios[1].Id, 200m, DateTime.Today.AddMonths(-18)),
+                new Investimento(usuarios[0].Id, 100m, DateTime.Today.AddMonths(-30)),
+                new Investimento(usuarios[1].Id, 200m, DateTime.Today.AddMonths(-30)),
                 new Investimento(usuarios[2].Id, 300m, DateTime.Today.AddMonths(-30)),
 
             };

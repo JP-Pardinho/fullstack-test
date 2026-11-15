@@ -28,14 +28,15 @@ builder.Services.AddScoped<InvestimentoService>();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await DbInitializer.SeedAsync(context);
-}
 
 if (app.Environment.IsDevelopment())
 {
+    using (var scope = app.Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await DbInitializer.SeedAsync(context);
+    }
+    
     app.UseSwagger();
     app.UseSwaggerUI();
 }
