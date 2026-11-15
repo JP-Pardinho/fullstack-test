@@ -1,0 +1,76 @@
+<section class="space-y-6">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900">Usuários</h1>
+    </div>
+
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <a
+        routerLink="/usuarios/novo"
+        class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700"
+      >
+        Novo Usuário
+      </a>
+    </div>
+  </div>
+
+  @if (erro()) {
+    <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      {{ erro() }}
+    </div>
+  }
+
+  @if (carregando()) {
+    <div class="rounded-xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500 shadow-sm">
+      Carregando usuários...
+    </div>
+  } @else {
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+          <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500">
+            <tr>
+              <th class="px-6 py-3">Nome</th>
+              <th class="px-6 py-3 text-right">Ações</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-slate-200 bg-white">
+            @for (usuario of usuarios(); track usuario.id) {
+              <tr class="transition hover:bg-slate-50">
+                <td class="whitespace-nowrap px-6 py-4 font-medium text-slate-900">
+                  {{ usuario.nome }}
+                </td>
+
+                <td class="whitespace-nowrap px-6 py-4 text-right">
+                  <a
+                    [routerLink]="['/usuarios', usuario.id]"
+                    title="Ver detalhes"
+                    class="inline-flex items-center text-blue-600 transition hover:text-blue-800"
+                  >
+                    <lucide-icon name="eye" class="h-5 w-5" />
+                  </a>
+
+                  <button
+                    type="button"
+                    (click)="excluir(usuario)"
+                    title="Excluir usuário"
+                    class="ml-3 inline-flex items-center text-red-600 transition hover:text-red-800"
+                  >
+                    <lucide-icon name="trash-2" class="h-5 w-5" />
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="2" class="px-6 py-10 text-center text-slate-500">
+                  Nenhum usuário encontrado.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</section>
