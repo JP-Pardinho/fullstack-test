@@ -111,17 +111,17 @@ public class InvestimentoService
 
     public static decimal CalcularImpostos(decimal rendimento, DateTime dataCriacao, DateTime dataSaque)
     {
+        if (rendimento <= 0)
+            return 0;
+
         decimal aliquota = 0;
 
-        if (rendimento <= 0)
-        {
-            if (dataSaque.Date < dataCriacao.Date.AddYears(1)) {
-                aliquota = 0.225m;
-            } else if (dataSaque.Date <= dataCriacao.Date.AddYears(2)) {
-                aliquota = 0.185m;
-            } else {
-                aliquota = 0.15m;
-            }
+        if (dataSaque.Date < dataCriacao.Date.AddYears(1)) {
+            aliquota = 0.225m;
+        } else if (dataSaque.Date <= dataCriacao.Date.AddYears(2)) {
+            aliquota = 0.185m;
+        } else {
+            aliquota = 0.15m;
         }
 
         decimal imposto = Math.Round(rendimento * aliquota, 2, MidpointRounding.AwayFromZero);  
