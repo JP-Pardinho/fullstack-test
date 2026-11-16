@@ -1,0 +1,77 @@
+<section class="mx-auto max-w-xl space-y-6">
+  <div>
+    <h1 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Novo Investimento</h1>
+    <p class="mt-1 text-sm text-slate-500">
+      Rendimento composto de 0,52% ao mês no mesmo dia da criação.
+    </p>
+  </div>
+
+  @if (erro()) {
+    <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      {{ erro() }}
+    </div>
+  }
+
+  <form
+    (ngSubmit)="salvar()"
+    class="space-y-5 rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+  >
+    <div>
+      <label for="usuarioId" class="block text-sm font-medium text-slate-700">Titular</label>
+      <select
+        id="usuarioId"
+        name="usuarioId"
+        [(ngModel)]="usuarioId"
+        class="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+      >
+        <option value="">Selecione um usuário...</option>
+        @for (u of usuarios(); track u.id) {
+          <option [value]="u.id">{{ u.nome }}</option>
+        }
+      </select>
+    </div>
+
+    <div>
+      <label for="valorInicial" class="block text-sm font-medium text-slate-700">Valor Inicial (R$)</label>
+      <input
+        id="valorInicial"
+        type="number"
+        name="valorInicial"
+        [(ngModel)]="valorInicial"
+        min="0.01"
+        step="0.01"
+        placeholder="Ex.: 1000.00"
+        class="mt-1.5 w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+      />
+    </div>
+
+    <div>
+      <label for="dataCriacao" class="block text-sm font-medium text-slate-700">Data de Criação</label>
+      <input
+        id="dataCriacao"
+        type="date"
+        name="dataCriacao"
+        [(ngModel)]="dataCriacao"
+        [max]="hoje"
+        class="mt-1.5 w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+      />
+    </div>
+
+    <div class="flex items-center justify-end gap-3 pt-2">
+      <a
+        routerLink="/investimentos"
+        class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+      >
+        Cancelar
+      </a>
+
+      <button
+        type="submit"
+        [disabled]="enviando()"
+        class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {{ enviando() ? 'Salvando...' : 'Criar Investimento' }}
+      </button>
+    </div>
+  </form>
+</section>
